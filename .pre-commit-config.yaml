@@ -1,0 +1,43 @@
+# Установка: uv sync --extra lint && uv run pre-commit install
+# Ручной прогон: uv run pre-commit run --all-files
+#
+# Хуки локальные (uv run): ruff и mypy берутся из окружения проекта с версиями из uv.lock,
+# а mypy видит все зависимости проекта (в изолированном окружении pre-commit он бы их не нашёл).
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: uv run --no-sync ruff check --fix --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+
+      - id: ruff-format
+        name: ruff format
+        entry: uv run --no-sync ruff format --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+
+      - id: mypy
+        name: mypy (strict)
+        # проверяется весь проект (files в [tool.mypy]), а не только изменённые файлы:
+        # иначе ошибки в зависимых модулях не будут видны
+        entry: uv run --no-sync mypy
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false
+        require_serial: true

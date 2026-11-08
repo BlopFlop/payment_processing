@@ -1,0 +1,103 @@
+[project]
+name = "payment-processing"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.20.1",
+    "asyncpg>=0.32.0",
+    "fastapi>=0.162.0",
+    "faststream[rabbit]>=0.7.8",
+    "httpx>=0.28.1",
+    "prometheus-client>=0.21",
+    "pydantic>=2.14.3",
+    "pydantic-settings>=2.16.2",
+    "pytest-coverage>=0.0",
+    "sqlalchemy[asyncio]>=2.1.8",
+    "uvicorn>=0.54.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1.post1",
+    "pytest-timeout>=2.3",
+    "testcontainers>=4.15.0",
+]
+lint = [
+    "mypy>=2.4.1",
+    "pre-commit>=4.0",
+    "ruff>=0.17.4",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+timeout = 120
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+filterwarnings = [
+    "ignore::DeprecationWarning:testcontainers.*",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+exclude = ["venv", ".venv", "alembic", "migrations"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "B",
+    "C4",
+    "UP",
+    "ARG001",
+]
+ignore = [
+    "E731",
+    "C408",
+    "B008",
+    "W191",
+    "B904",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ARG001"]
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.ruff.lint.isort]
+length-sort-straight = true
+from-first = false
+lines-after-imports = 2
+lines-between-types = 1
+known-local-folder = ["app", "tests"]
+known-first-party = ["fastapi", "pydantic", "starlette", "strawberry", "graphql", "sqlalchemy", "asyncpg", "httpx"]
+known-third-party = ["skoro", "base_oro"]
+section-order = [
+    "future",
+    "standard-library",
+    "first-party",
+    "third-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 7
+
+[tool.mypy]
+strict = true
+files = ["app", "tests", "main.py"]
+exclude = ["venv", ".venv", "alembic", "migrations"]
+plugins = ["pydantic.mypy"]
