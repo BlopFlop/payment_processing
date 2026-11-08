@@ -116,21 +116,6 @@ jobs:
           compose() { docker compose -f infra/docker-compose.prod.yaml --env-file .env "$@"; }
 
           compose pull
-
-          env_value() { sed -n "s/^$1=//p" .env | tail -1 | tr -d "\"'"; }
-          domain=$(env_value DOMAIN)
-          email=$(env_value CERTBOT_EMAIL)
-          certbot_image=$(compose config --images | grep '^certbot/')
-
-          if ! docker run --rm -v /etc/letsencrypt:/etc/letsencrypt --entrypoint test "$certbot_image" \
-              -f "/etc/letsencrypt/live/$domain/fullchain.pem"; then
-            echo "Сертификата для $domain нет, выпускаем через Let's Encrypt"
-            compose stop webserver || true
-            docker run --rm -p 80:80 -v /etc/letsencrypt:/etc/letsencrypt "$certbot_image" \
-              certonly --standalone --non-interactive --agree-tos -d "$domain" \
-              $([ -n "$email" ] && echo "--email $email --no-eff-email" || echo "--register-unsafely-without-email")
-          fi
-
           compose up -d --no-build --remove-orphans
           docker image prune -f
           REMOTE
@@ -163,17 +148,16 @@ jobs:
             exit 1
           fi
 
-          domain=$(sed -n 's/^DOMAIN=//p' .env | tail -1 | tr -d "\"'")
           for _ in $(seq 1 24); do
-            if curl -fsS --max-time 5 "https://$domain/api/health" > /dev/null; then
-              echo "https://$domain доступен"
+            if curl -fsS --max-time 5 http://localhost/api/health > /dev/null; then
+              echo "nginx проксирует запросы в api"
               compose ps
               exit 0
             fi
             sleep 5
           done
 
-          echo "::error::https://$domain/api/health не отвечает за 120 с"
+          echo "::error::http://localhost/api/health не отвечает за 120 с"
           compose ps -a
           compose logs --tail 100 webserver api
           exit 1

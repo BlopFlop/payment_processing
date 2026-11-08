@@ -77,8 +77,7 @@ app/
 ├── models.py            ORM-модели: Payment, Outbox
 └── repository.py        доступ к БД: PaymentRepository, OutboxRepository
 migrations/              миграции Alembic
-infra/                   Dockerfile, docker-compose (local/prod), nginx (в проде с HTTPS
-                         через Let's Encrypt/certbot), Prometheus, Grafana
+infra/                   Dockerfile, docker-compose (local/prod), nginx, Prometheus, Grafana
 tests/
 ├── fixtures/            фикстуры: контейнеры PostgreSQL и RabbitMQ, фейки шлюза и webhook
 ├── test_00_smoke/       конфигурация, схема БД, топология брокера, OpenAPI
