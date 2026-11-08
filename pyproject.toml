@@ -13,7 +13,6 @@ dependencies = [
     "prometheus-client>=0.21",
     "pydantic>=2.14.3",
     "pydantic-settings>=2.16.2",
-    "pytest-coverage>=0.0",
     "sqlalchemy[asyncio]>=2.1.8",
     "uvicorn>=0.54.0",
 ]
@@ -22,6 +21,7 @@ dependencies = [
 test = [
     "pytest>=9.2.0",
     "pytest-asyncio>=1.4.1.post1",
+    "pytest-cov>=7.1",
     "pytest-timeout>=2.3",
     "testcontainers>=4.15.0",
 ]
@@ -41,6 +41,26 @@ asyncio_default_test_loop_scope = "session"
 filterwarnings = [
     "ignore::DeprecationWarning:testcontainers.*",
 ]
+
+[tool.coverage.run]
+source = ["app"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+skip_empty = true
+precision = 1
+fail_under = 90
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "@(abc\\.)?abstractmethod",
+    "raise NotImplementedError",
+    "\\.\\.\\.",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
 
 [tool.ruff]
 line-length = 120

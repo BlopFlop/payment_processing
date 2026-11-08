@@ -17,7 +17,12 @@ uv run pre-commit install
 ```bash
 uv run pytest
 uv run pytest tests/test_01_functional
+make cov
 ```
+
+`make cov` запускает тесты с замером покрытия кода `app/`: отчёт выводится в терминал, HTML-версия
+сохраняется в `htmlcov/index.html`. Если покрытие ниже 90%, команда завершается ошибкой. В CI покрытие
+проверяется так же, а итоговая таблица выводится в summary запуска.
 
 | Папка | Что проверяет |
 |---|---|

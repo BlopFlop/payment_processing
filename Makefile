@@ -3,7 +3,7 @@ export ENV_FILE
 COMPOSE := docker compose -f infra/docker-compose.local.yaml --env-file $(ENV_FILE)
 COMPOSE_PROD := docker compose -f infra/docker-compose.prod.yaml --env-file $(ENV_FILE)
 
-.PHONY: help build up down down-v ps logs monitoring nginx prod-config test lint format typecheck
+.PHONY: help build up down down-v ps logs monitoring nginx prod-config test cov lint format typecheck
 
 help:  ## список команд
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
@@ -37,6 +37,9 @@ prod-config:  ## проверить prod-compose (make prod-config ENV_FILE=.env
 
 test:  ## все тесты (нужен Docker)
 	uv run pytest
+
+cov:  ## тесты с покрытием, HTML-отчёт в htmlcov/
+	uv run pytest --cov --cov-report=term --cov-report=html
 
 lint:  ## ruff check + format --check
 	uv run ruff check && uv run ruff format --check
